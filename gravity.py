@@ -91,6 +91,11 @@ while not done:
                 new_mass /= 2
             elif event.key == pygame.K_RIGHT:
                 new_mass *= 2
+            elif event.key == pygame.K_r:
+                screen.fill((0, 0, 0))
+                planets = [Planet(2000, 0, 0, 0, 0)]
+                center_x = 0
+                center_y = 0
         elif event.type == pygame.MOUSEBUTTONDOWN:
             drawing = True
             origin_x = pygame.mouse.get_pos()[0]
