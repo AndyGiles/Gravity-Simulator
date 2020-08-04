@@ -15,3 +15,5 @@ Pressing 't' will toggle trails.
 Pressing the up and down arrows will increase or decrease the value of G, the gravitational constant used in the simulation. A higher G value will make everything exert a greater force on the other bodies.
 
 Pressing the left and right arrow keys will increase the mass of any new body that is created with the click and drag feature.
+
+Pressing 'r' will reset the screen, so there will once again be a single large mass in the center. Pressing 'r' will not affect the trail state or pause state.
