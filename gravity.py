@@ -35,6 +35,11 @@ new_mass_text_rect = new_mass_text.get_rect()
 new_mass_text_rect.top = 0
 new_mass_text_rect.right = x - 100
 screen.blit(new_mass_text, new_mass_text_rect)
+paused_text = font.render("Paused", True, (255, 255, 255), (0, 0, 0))
+paused_text_rect = paused_text.get_rect()
+paused_text_rect.bottom = y
+paused_text_rect.right = x
+screen.blit(paused_text, paused_text_rect)
 
 done = False
 running = False
@@ -48,7 +53,12 @@ while not done:
             done = True
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:  # toggle the program's functionality
-                running = not running
+                if running:
+                    running = False
+                    screen.blit(paused_text, paused_text_rect)
+                else:
+                    screen.fill((0, 0, 0))
+                    running = True
             elif event.key == pygame.K_t:  # toggle trails
                 trail = not trail
             elif event.key == pygame.K_c:  # center the screen on the biggest mass
@@ -94,8 +104,10 @@ while not done:
         if not trail:
             screen.fill((0, 0, 0))
         if drawing:
+            screen.fill((0, 0, 0))
             pygame.draw.line(screen, (255, 255, 255), (origin_x, origin_y), (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]))
         elif throw_ready:
+            screen.fill((0, 0, 0))
             planets.append(Planet(new_mass, origin_x - x / 2 + center_x, origin_y - y / 2 + center_y, (destination_x - origin_x) / 20, (destination_y - origin_y) / 20))
             total_planets += 1
             throw_ready = False
