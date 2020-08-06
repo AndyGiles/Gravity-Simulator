@@ -19,33 +19,38 @@ for planet in planets:
     planet.draw(screen, x, y, center_x, center_y)
 
 total_planets = len(planets)  # stores the number of bodies for the counter in the top left
-font = pygame.font.Font('freesansbold.ttf', 32)
+
+font = pygame.font.Font('freesansbold.ttf', 32)  # displays the number of bodies
 body_text = font.render(f"Bodies: {total_planets}", True, (255, 255, 255), (0, 0, 0))
 body_text_rect = body_text.get_rect()
 body_text_rect.top = 0
 body_text_rect.left = 0
 screen.blit(body_text, body_text_rect)
-g_text = font.render(f"G: {G}", True, (255, 255, 255), (0, 0, 0))
+
+g_text = font.render(f"G: {G}", True, (255, 255, 255), (0, 0, 0))  # displays the value of the gravitational constant
 g_text_rect = g_text.get_rect()
 g_text_rect.top = 0
 g_text_rect.left = 250
 screen.blit(g_text, g_text_rect)
-new_mass_text = font.render(f"New Mass: {new_mass}", True, (255, 255, 255), (0, 0, 0))
+
+new_mass_text = font.render(f"New Mass: {new_mass}", True, (255, 255, 255), (0, 0, 0))  # displays the mass that newly created bodies will have
 new_mass_text_rect = new_mass_text.get_rect()
 new_mass_text_rect.top = 0
 new_mass_text_rect.right = x - 100
 screen.blit(new_mass_text, new_mass_text_rect)
-paused_text = font.render("Paused", True, (255, 255, 255), (0, 0, 0))
+
+paused_text = font.render("Paused", True, (255, 255, 255), (0, 0, 0))  # creates the pause indicating text
 paused_text_rect = paused_text.get_rect()
 paused_text_rect.bottom = y
 paused_text_rect.right = x
-screen.blit(paused_text, paused_text_rect)
 
 done = False
-running = False
+running = True
 trail = False
 drawing = False
 throw_ready = False
+velocity_vector = False
+acceleration_vector = False
 
 while not done:
     for event in pygame.event.get():
@@ -83,15 +88,20 @@ while not done:
                             other_planet.vel_x -= planet.vel_x
                             other_planet.vel_y -= planet.vel_y
                         break
-            elif event.key == pygame.K_UP:
+            elif event.key == pygame.K_v:
+                velocity_vector = not velocity_vector
+            elif event.key == pygame.K_a:
+                acceleration_vector = not acceleration_vector
+            elif event.key == pygame.K_UP:  # adjust the G value
                 G += 0.01
             elif event.key == pygame.K_DOWN:
                 G -= 0.01
-            elif event.key == pygame.K_LEFT and new_mass >= 2:
+            elif event.key == pygame.K_LEFT and new_mass >= 2:  # adjust the mass of the new planets created by clicking and dragging
                 new_mass /= 2
             elif event.key == pygame.K_RIGHT:
                 new_mass *= 2
-            elif event.key == pygame.K_r:
+            elif event.key == pygame.K_r:  # resets the screen to have a single body in the middle
+                total_planets = 1
                 screen.fill((0, 0, 0))
                 planets = [Planet(2000, 0, 0, 0, 0)]
                 center_x = 0
@@ -132,6 +142,10 @@ while not done:
                     planets.append(Planet(combined_mass, bigger_planet.pos_x, bigger_planet.pos_y, new_vel_x, new_vel_y))
                 planet.calculate(planets, G)  # calculates all gravitational forces on a body
                 planet.draw(screen, x, y, center_x, center_y)
+                if velocity_vector:
+                    planet.draw_vel(screen, x, y, center_x, center_y)
+                if acceleration_vector:
+                    planet.draw_acc(screen, x, y, center_x, center_y)
             planet.vectors = []  # resets the forces for recalculation in the next frame
     body_text = font.render(f"Bodies: {total_planets}", True, (255, 255, 255), (0, 0, 0))  # redraws the text every frame
     screen.blit(body_text, body_text_rect)
