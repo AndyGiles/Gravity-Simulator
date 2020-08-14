@@ -2,7 +2,7 @@
 A program using Python's 2D graphics module Pygame that simulates gravity physics between point masses.
 
 
-To use, put both gravity.py and PlanetClass.py in the same directory, and run gravity.py. Make sure you have Pygame installed. 
+To use, put both gravity.py, PlanetClass.py, and background.wav in the same directory, and run gravity.py. Make sure you have Pygame installed. 
 
 The program will start off with a single large mass in the center of the screen. Click and drag to create a new point thats intitial velocity is proportional to the vector that you drew.
 
