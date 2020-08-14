@@ -14,6 +14,7 @@ class Planet:
         if self.radius < 1:  # makes sure all bodies are visible on the screen
             self.radius = 1
         self.color = (255, 255, 255)
+        self.trail_color = (255, 0, 0)
         self.pos_x = x
         self.pos_y = y
         self.vel_x = xv
@@ -22,6 +23,7 @@ class Planet:
         self.acc_y = 0
         self.alive = True
         self.vectors = []
+        self.points = []
     def calculate(self, list, G):
         for planet in list:
             if planet.alive and not (self.pos_x == planet.pos_x and self.pos_y == planet.pos_y):
@@ -38,15 +40,15 @@ class Planet:
         self.vel_y += self.acc_y
         self.pos_x += self.vel_x  # moves each particle by its velocity every frame
         self.pos_y += self.vel_y
+        self.points.append((self.pos_x, self.pos_y))
     def draw(self, screen, x, y, center_x, center_y):  # draws the particle on the screen - radius is proportional to the cube root of the mass (as if it was 3D)
         if self.alive:
             pygame.draw.circle(screen, self.color, (self.pos_x + x / 2 - center_x, self.pos_y + y / 2 - center_y), self.radius)
-    def draw_vel(self, screen, x, y, center_x, center_y):  # draws a vector of the current velocity
-        if self.alive:
-            pygame.draw.line(screen, (0, 255, 0), (self.pos_x + x / 2 - center_x, self.pos_y + y / 2 - center_y), (self.vel_x * 5 + self.pos_x + x / 2 - center_x, self.vel_y * 5 + self.pos_y + y / 2 - center_y))
-    def draw_acc(self, screen, x, y, center_x, center_y):  # draws a vector of the current acceleration
-        if self.alive:
-            pygame.draw.line(screen, (255, 255, 0), (self.pos_x + x / 2 - center_x, self.pos_y + y / 2 - center_y), (self.acc_x * 100 + self.pos_x + x / 2 - center_x, self.acc_y * 100 + self.pos_y + y / 2 - center_y))
+    def drawTrail(self, screen, x, y, center_x, center_y):
+        if len(self.points) >= 1001:
+            self.points = self.points[-1001:]
+        for i in range(0, len(self.points) - 1, 1):
+            pygame.draw.line(screen, self.trail_color, (self.points[i][0] + x / 2 - center_x, self.points[i][1] + y / 2 - center_y), (self.points[i + 1][0] + x / 2 - center_x, self.points[i + 1][1] + y / 2 - center_y))
     def distance(self, planet):  # returns the euclidean distance between self and another planet
         return ((self.pos_x - planet.pos_x) ** 2 + (self.pos_y - planet.pos_y) ** 2) ** 0.5
     def colliding(self, list):  # if the planet collides with another, it returns a Planet object of the othe planet, otherwise it returns False
