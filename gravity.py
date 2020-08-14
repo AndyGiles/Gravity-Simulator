@@ -2,6 +2,11 @@ from PlanetClass import *
 
 pygame.init()
 pygame.display.set_caption("Gravity")
+collision_sound = pygame.mixer.Sound("pop.wav")
+
+pygame.mixer.music.load("background.wav")
+pygame.mixer.music.set_volume(0.2)
+pygame.mixer.music.play(-1)
 
 x = 1400
 y = 800
@@ -17,6 +22,7 @@ planets = [Planet(2000, 0, 0, 0, 0)]
 screen.fill((0, 0, 0))
 for planet in planets:
     planet.draw(screen, x, y, center_x, center_y)
+pygame.display.flip()
 
 total_planets = len(planets)  # stores the number of bodies for the counter in the top left
 
@@ -49,8 +55,7 @@ running = True
 trail = False
 drawing = False
 throw_ready = False
-velocity_vector = False
-acceleration_vector = False
+collision = False
 
 while not done:
     for event in pygame.event.get():
@@ -66,28 +71,8 @@ while not done:
                     running = True
             elif event.key == pygame.K_t:  # toggle trails
                 trail = not trail
-            elif event.key == pygame.K_c:  # center the screen on the biggest mass
-                screen.fill((0, 0, 0))
-                maximum_mass = 0
                 for planet in planets:
-                    if planet.mass > maximum_mass:
-                        maximum_mass = planet.mass
-                for planet in planets:
-                    if planet.mass == maximum_mass:
-                        center_x = planet.pos_x
-                        center_y = planet.pos_y
-            elif event.key == pygame.K_m:  # move the camera at the same speed as the largest object (essentially change reference frame)
-                screen.fill((0, 0, 0))
-                maximum_mass = 0
-                for planet in planets:
-                    if planet.mass > maximum_mass:
-                        maximum_mass = planet.mass
-                for planet in planets:
-                    if planet.mass == maximum_mass:
-                        for other_planet in planets:
-                            other_planet.vel_x -= planet.vel_x
-                            other_planet.vel_y -= planet.vel_y
-                        break
+                    planet.points = []
             elif event.key == pygame.K_v:
                 velocity_vector = not velocity_vector
             elif event.key == pygame.K_a:
@@ -116,8 +101,9 @@ while not done:
             destination_y = pygame.mouse.get_pos()[1]
             throw_ready = True
     if running:
-        if not trail:
-            screen.fill((0, 0, 0))
+        screen.fill((0, 0, 0))
+        center_x = planets[0].pos_x
+        center_y = planets[0].pos_y
         if drawing:
             screen.fill((0, 0, 0))
             pygame.draw.line(screen, (255, 255, 255), (origin_x, origin_y), (pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]))
@@ -126,9 +112,11 @@ while not done:
             planets.append(Planet(new_mass, origin_x - x / 2 + center_x, origin_y - y / 2 + center_y, (destination_x - origin_x) / 20, (destination_y - origin_y) / 20))
             total_planets += 1
             throw_ready = False
+        collision = False
         for planet in planets:
             if planet.alive:
                 if planet.colliding(planets):  # detects planetary collisions
+                    collision = True
                     total_planets -= 1
                     other_planet = planet.colliding(planets)
                     planet.alive = False
@@ -141,16 +129,18 @@ while not done:
                     new_vel_y = y_momentum_before_collision / combined_mass
                     planets.append(Planet(combined_mass, bigger_planet.pos_x, bigger_planet.pos_y, new_vel_x, new_vel_y))
                 planet.calculate(planets, G)  # calculates all gravitational forces on a body
+                if trail:
+                    planet.drawTrail(screen, x, y, center_x, center_y)
                 planet.draw(screen, x, y, center_x, center_y)
-                if velocity_vector:
-                    planet.draw_vel(screen, x, y, center_x, center_y)
-                if acceleration_vector:
-                    planet.draw_acc(screen, x, y, center_x, center_y)
             planet.vectors = []  # resets the forces for recalculation in the next frame
+        if collision:
+            planets = [planet for planet in planets if planet.alive]
+            collision_sound.play()
+            planets = sorted(planets, key = lambda x : x.mass, reverse = True)
     body_text = font.render(f"Bodies: {total_planets}", True, (255, 255, 255), (0, 0, 0))  # redraws the text every frame
     screen.blit(body_text, body_text_rect)
     g_text = font.render(f"G: {round(G, 2)}", True, (255, 255, 255), (0, 0, 0))
     screen.blit(g_text, g_text_rect)
     new_mass_text = font.render(f"New Mass: {round(new_mass)}", True, (255, 255, 255), (0, 0, 0))
     screen.blit(new_mass_text, new_mass_text_rect)
-    pygame.display.update()
+    pygame.display.flip()
