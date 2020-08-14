@@ -8,8 +8,6 @@ The program will start off with a single large mass in the center of the screen.
 
 Press the space bar to start and pause the simulation.
 
-Pressing 'c' will center the screen on the largest mass, and pressing 'm' will put you in the reference frame of the largest mass, so you can essentially get the camera to match its speed and follow the system.
-
 Pressing 't' will toggle trails.
 
 Pressing the up and down arrows will increase or decrease the value of G, the gravitational constant used in the simulation. A higher G value will make everything exert a greater force on the other bodies.
