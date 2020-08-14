@@ -17,5 +17,3 @@ Pressing the up and down arrows will increase or decrease the value of G, the gr
 Pressing the left and right arrow keys will increase the mass of any new body that is created with the click and drag feature.
 
 Pressing 'r' will reset the screen, so there will once again be a single large mass in the center. Pressing 'r' will not affect the trail state or pause state.
-
-Pressing 'v' will toggle velocity vectors, and pressing 'a' will toggle acceleration vectors. Note: in this program, velocity is essentially measured in pixels per frame, and acceleration in pixels per frame per frame. The actual numbers associated with this mean that acceleration is usually only a small fraction of the velocity, and as such I multiplied the vectors by different quanitities for the visual display. The acceleration vectors are 20x inflated compared to the velocity vectors. However, all velocity vectors are correctly proportional to each other, and the same holds for acceleration vectors.
